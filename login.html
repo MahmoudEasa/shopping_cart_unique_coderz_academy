@@ -10,13 +10,46 @@
 		<link rel="stylesheet" href="css/login.css" />
 	</head>
 	<body>
-		<header>
-			<a href="index.html">Shopping Cart</a>
+		<header class="flex-row">
+			<div class="container">
+				<div class="header-content flex-row">
+					<a class="brand" href="index.html">Shopping Cart</a>
 
-			<nav>
-				<li><a href="login.html">Sign In</a></li>
-				<li><a href="register.html">Sign Up</a></li>
-			</nav>
+					<nav>
+						<ul class="flex-row">
+							<li><a href="login.html">Sign In</a></li>
+							<li><a href="register.html">Sign Up</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
 		</header>
+
+		<section class="section-form">
+			<h2>Login User</h2>
+			<form id="form">
+				<label for="username">User Name</label>
+				<input
+					required
+					type="text"
+					name="username"
+					id="username"
+					placeholder="Enter Username..."
+				/>
+
+				<label for="password">Password</label>
+				<input
+					required
+					type="password"
+					name="password"
+					id="password"
+					placeholder="Enter Password..."
+				/>
+
+				<input type="submit" value="Sign In" />
+			</form>
+		</section>
+
+		<script src="js/login.js"></script>
 	</body>
 </html>

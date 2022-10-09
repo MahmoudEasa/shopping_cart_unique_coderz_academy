@@ -10,6 +10,55 @@
 		<link rel="stylesheet" href="css/register.css" />
 	</head>
 	<body>
-		<h1>Shopping Cart | Register</h1>
+		<header class="flex-row">
+			<div class="container">
+				<div class="header-content flex-row">
+					<a class="brand" href="index.html">Shopping Cart</a>
+
+					<nav>
+						<ul class="flex-row">
+							<li><a href="login.html">Sign In</a></li>
+							<li><a href="register.html">Sign Up</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</header>
+
+		<section class="section-form">
+			<h2>Register User</h2>
+			<form id="form">
+				<label for="username">User Name</label>
+				<input
+					required
+					type="text"
+					name="username"
+					id="username"
+					placeholder="Enter Username..."
+				/>
+
+				<label for="email">Email</label>
+				<input
+					required
+					type="email"
+					name="email"
+					id="email"
+					placeholder="Enter Email..."
+				/>
+
+				<label for="password">Password</label>
+				<input
+					required
+					type="password"
+					name="password"
+					id="password"
+					placeholder="Enter Password..."
+				/>
+
+				<input type="submit" value="Register" />
+			</form>
+		</section>
+
+		<script src="js/register.js"></script>
 	</body>
 </html>

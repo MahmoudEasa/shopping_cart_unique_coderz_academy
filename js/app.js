@@ -1,10 +1,8 @@
 const navUl = document.querySelector(".nav-ul");
-const productsDom = document.querySelector(".products");
-let user;
-let cartProducts = [];
-let favoriteProducts = [];
+let user = JSON.parse(localStorage.getItem("user")) || "";
+let users = JSON.parse(localStorage.getItem("users")) || "";
 
-// Hide Item If Window Click
+// Hide Item On Window Click
 const hideItemOnWindowClick = (item, target) => {
 	if (user) {
 		window.addEventListener("click", (e) => {
@@ -15,69 +13,21 @@ const hideItemOnWindowClick = (item, target) => {
 	}
 };
 
-// Set CartProducts If localStorage.getItem("cartProducts")
-if (localStorage.getItem("cartProducts")) {
-	cartProducts = JSON.parse(localStorage.getItem("cartProducts"));
-}
-
-// Set favoriteProducts If localStorage.getItem("favoriteProducts")
-if (localStorage.getItem("favoriteProducts")) {
-	favoriteProducts = JSON.parse(localStorage.getItem("favoriteProducts"));
-}
-
 // Sign Out
 const signOutfun = () => {
 	const signOut = document.querySelector(".sign-out");
+	const findUser = users.findIndex((item) => item.username === user.username);
 	if (signOut) {
 		signOut.addEventListener("click", () => {
-			if (localStorage.getItem("user")) {
-				localStorage.removeItem("user");
-				window.location.replace("login.html");
-			}
+			users[findUser] = user;
+			localStorage.setItem("users", JSON.stringify(users));
+			localStorage.removeItem("user");
+			window.location.replace("login.html");
 		});
 	}
 };
 
-// Products Data
-const products = [
-	{
-		id: 1,
-		title: "product-1",
-		desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, qui!",
-		size: "Size: L",
-		img: "/images/product-1.jpeg",
-	},
-	{
-		id: 2,
-		title: "product-2",
-		desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, qui!",
-		size: "Size: XL",
-		img: "/images/product-2.jpeg",
-	},
-	{
-		id: 3,
-		title: "product-3",
-		desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, qui!",
-		size: "Size: M",
-		img: "/images/product-3.jpeg",
-	},
-	{
-		id: 4,
-		title: "product-4",
-		desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, qui!",
-		size: "Size: XXL",
-		img: "/images/product-4.jpeg",
-	},
-	{
-		id: 5,
-		title: "product-5",
-		desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem, qui!",
-		size: "Size: XXL",
-		img: "images/product-5.jpeg",
-	},
-];
-
-// Remove " , " From Between Products
+// Remove " , " From Between Products removeNodeText(productsDom)
 const removeNodeText = (productsDom) => {
 	for (const node of productsDom.childNodes) {
 		if (node.nodeName == "#text") {
@@ -90,8 +40,8 @@ const removeNodeText = (productsDom) => {
 const productDomNavCart = (type) => {
 	let result;
 	if (type === "shoppingCart") {
-		cartProducts.length > 0
-			? (result = cartProducts.map((product) => {
+		user.cartProducts.length > 0
+			? (result = user.cartProducts.map((product) => {
 					return `
 					<div class="product-item">
 						<img
@@ -114,8 +64,8 @@ const productDomNavCart = (type) => {
 	}
 
 	if (type === "favoriteCart") {
-		favoriteProducts.length > 0
-			? (result = favoriteProducts.map((product) => {
+		user.favoriteProducts.length > 0
+			? (result = user.favoriteProducts.map((product) => {
 					return `
 					<div class="product-item">
 						<img
@@ -139,10 +89,60 @@ const productDomNavCart = (type) => {
 	return result;
 };
 
+// Carts Products Shopping Cart Nav Bar
+const cartsProductsShoppingDiv = () => {
+	if (user) {
+		return `
+			<div class="carts-products ${
+				user.cartProducts.length <= 0 ? "flex-row" : ""
+			} shopping-cart-toggle hide">
+				${
+					user.cartProducts.length > 0
+						? `<a href="shoppingCart.html"><button class="add-to-cart">Show All</button></a>`
+						: ""
+				}
+				
+				${productDomNavCart("shoppingCart")}
+
+				${
+					user.cartProducts.length > 0
+						? `<button onclick="removeAllProducts()" class="add-to-cart">Remove All</button>`
+						: ""
+				}
+			</div>
+		
+		`;
+	}
+};
+
+// Carts Products Favorite Nav Bar
+const cartsProductsFavoriteDiv = () => {
+	if (user) {
+		return `
+			<div class="carts-products ${
+				user.favoriteProducts.length <= 0 ? "flex-row" : ""
+			} favorite-toggle hide">
+				${
+					user.favoriteProducts.length > 0
+						? `<a href="favoriteCart.html"><button class="add-to-cart">Show All</button></a>`
+						: ""
+				}
+
+				${productDomNavCart("favoriteCart")}
+				
+				${
+					user.favoriteProducts.length > 0
+						? `<button onclick="removeAllFavorite()" class="add-to-cart">Remove All</button>`
+						: ""
+				}
+			</div>
+		`;
+	}
+};
+
 // If Sign In Change The Nav Links
 const runProductsNavLinks = () => {
-	if (localStorage.getItem("user")) {
-		user = JSON.parse(localStorage.getItem("user"));
+	if (user) {
 		navUl.innerHTML = `
 			<li>${user.username}</li>
 			<li class="sign-out">Sign Out</li>
@@ -151,95 +151,38 @@ const runProductsNavLinks = () => {
 				<i class="fa-solid fa-cart-shopping shopping-cart-icon">
 					<span>0</span>
 				</i>
-				<div class="carts-products ${
-					cartProducts.length <= 0 && "flex-row"
-				} shopping-cart-toggle hide">
-					${
-						cartProducts.length > 0
-							? `<button class="add-to-cart"><a href="cartShopping.html">Show All</a></button>`
-							: ""
-					}
-					
-					${productDomNavCart("shoppingCart")}
-
-					${
-						cartProducts.length > 0
-							? `<button onclick="removeAllProducts()" class="add-to-cart">Remove All</button>`
-							: ""
-					}
-				</div>
+				${cartsProductsShoppingDiv()}
 			</li>
 
 			<li class="shopping-cart-icon-li">
 				<i class="fa-regular fa-heart favorite-icon">
 					<span>0</span>
 				</i>
-				<div class="carts-products ${
-					favoriteProducts.length <= 0 && "flex-row"
-				} favorite-toggle hide">
-					${
-						favoriteProducts.length > 0
-							? `<button class="add-to-cart"><a href="favoriteCart.html">Show All</a></button>`
-							: ""
-					}
-
-					${productDomNavCart("favoriteCart")}
-					
-					${
-						favoriteProducts.length > 0
-							? `<button onclick="removeAllFavorite()" class="add-to-cart">Remove All</button>`
-							: ""
-					}
-				</div>
+				${cartsProductsFavoriteDiv()}
 			</li>
 		`;
 	}
 
 	// Remove " , " From Between Carts Products
-	const cartsProducts = document.querySelector(".carts-products");
+	const cartsProducts = document.querySelectorAll(".carts-products");
 	if (cartsProducts) {
-		removeNodeText(cartsProducts);
+		for (const item of cartsProducts) {
+			removeNodeText(item);
+		}
 	}
 };
-
-// Add Products In The Dom
-if (productsDom) {
-	productsDom.innerHTML = products.map((product) => {
-		return `
-			<div class="product-item">
-				<img
-					src=${product.img}
-					alt=${product.title}
-					class="product-item-img"
-				/>
-				<div class="product-item-desc">
-					<h2>${product.title}</h2>
-					<p>${product.desc}</p>
-					<span>${product.size}</span>
-				</div>
-				<div class="product-item-actions">
-					<button class="add-to-cart" onclick="addToCartButton(${product.id})">Add To Cart</button>
-					<i onclick="addToFavoriteButton(${product.id})" id="${product.id}" class="fa-regular fa-heart favorite"></i>
-				</div>
-			</div>
-		`;
-	});
-
-	// Remove " , " From Between Products
-	removeNodeText(productsDom);
-}
 
 // Toggle Favorite Icons
 const toggleFavoriteIcon = () => {
 	if (localStorage.getItem("user")) {
 		const favorite = document.querySelectorAll(".favorite");
-		if (favoriteProducts.length > 0) {
+		if (user.favoriteProducts.length > 0) {
 			if (favorite) {
 				for (const item of favorite) {
 					item.classList.replace("fa-solid", "fa-regular");
 				}
 
-				for (const f of favoriteProducts) {
+				for (const f of user.favoriteProducts) {
 					for (const item of favorite) {
 						if (
 							item.classList.contains("fa-regular") &&
@@ -267,7 +210,7 @@ const increaseShoppingCartIconNumber = () => {
 	);
 
 	if (shoppingCartIconNum) {
-		shoppingCartIconNum.innerHTML = cartProducts.length;
+		shoppingCartIconNum.innerHTML = user.cartProducts.length;
 	}
 };
 
@@ -276,7 +219,7 @@ const increaseFavoriteIconNumber = () => {
 	const favoriteIconNum = document.querySelector(".favorite-icon span");
 
 	if (favoriteIconNum) {
-		favoriteIconNum.innerHTML = favoriteProducts.length;
+		favoriteIconNum.innerHTML = user.favoriteProducts.length;
 	}
 };
 
@@ -350,30 +293,29 @@ const runAllNavFunctions = () => {
 	// Run Sign Out Function
 	signOutfun();
 };
-runAllNavFunctions();
 
 // Add To Cart Button
 const addToCartButton = (id) => {
-	if (localStorage.getItem("user")) {
+	if (user) {
 		const productId = products.find((item) => item.id == id);
 
 		// Check If Product In Array
-		if (cartProducts.length > 0) {
+		if (user.cartProducts.length > 0) {
 			let findProduct = false;
-			cartProducts.map((product) => {
+			user.cartProducts.map((product) => {
 				if (product.id == productId.id) {
 					findProduct = true;
 				}
 			});
 
 			if (!findProduct) {
-				cartProducts.push(productId);
+				user.cartProducts.push(productId);
 			}
 		} else {
-			cartProducts.push(productId);
+			user.cartProducts.push(productId);
 		}
 
-		localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+		localStorage.setItem("user", JSON.stringify(user));
 	} else {
 		window.location = "login.html";
 	}
@@ -384,9 +326,9 @@ const addToCartButton = (id) => {
 
 // Remove From Cart Button
 const removeFromCartButton = (id) => {
-	const filteredProducts = cartProducts.filter((item) => item.id != id);
-	cartProducts = filteredProducts;
-	localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+	const filteredProducts = user.cartProducts.filter((item) => item.id != id);
+	user.cartProducts = filteredProducts;
+	localStorage.setItem("user", JSON.stringify(user));
 
 	// Run All Nav Bar Functions
 	runAllNavFunctions();
@@ -394,8 +336,8 @@ const removeFromCartButton = (id) => {
 
 // Remove All From Cart
 const removeAllProducts = () => {
-	cartProducts = [];
-	localStorage.removeItem("cartProducts");
+	user.cartProducts = [];
+	localStorage.setItem("user", JSON.stringify(user));
 
 	// Run All Nav Bar Functions
 	runAllNavFunctions();
@@ -403,37 +345,34 @@ const removeAllProducts = () => {
 
 // Add To Favorite Button
 const addToFavoriteButton = (id) => {
-	if (localStorage.getItem("user")) {
+	if (user) {
 		const productFind = products.find((item) => item.id == id);
 
 		// Check If Product In Array
-		if (favoriteProducts.length > 0) {
+		if (user.favoriteProducts.length > 0) {
 			let findProduct = false;
 
-			favoriteProducts.map((item) => {
+			user.favoriteProducts.map((item) => {
 				if (item.id == productFind.id) {
 					findProduct = true;
 				}
 			});
 
 			if (!findProduct) {
-				favoriteProducts.push(productFind);
+				user.favoriteProducts.push(productFind);
 			} else {
-				const removeItem = favoriteProducts.filter(
+				const removeItem = user.favoriteProducts.filter(
 					(item) => item.id != productFind.id
 				);
 
-				favoriteProducts = removeItem;
+				user.favoriteProducts = removeItem;
 			}
 
 			findProduct = false;
 		} else {
-			favoriteProducts.push(productFind);
+			user.favoriteProducts.push(productFind);
 		}
-		localStorage.setItem(
-			"favoriteProducts",
-			JSON.stringify(favoriteProducts)
-		);
+		localStorage.setItem("user", JSON.stringify(user));
 	} else {
 		window.location = "login.html";
 	}
@@ -444,10 +383,11 @@ const addToFavoriteButton = (id) => {
 
 // Remove From Favorite Button
 const removeFromFavoriteButton = (id) => {
-	const filteredFavorites = favoriteProducts.filter((item) => item.id != id);
-	favoriteProducts = filteredFavorites;
-	localStorage.setItem("favoriteProducts", JSON.stringify(favoriteProducts));
-	console.log(id);
+	const filteredFavorites = user.favoriteProducts.filter(
+		(item) => item.id != id
+	);
+	user.favoriteProducts = filteredFavorites;
+	localStorage.setItem("user", JSON.stringify(user));
 
 	// Run All Nav Bar Functions
 	runAllNavFunctions();
@@ -455,17 +395,13 @@ const removeFromFavoriteButton = (id) => {
 
 // Remove All From Favorite
 const removeAllFavorite = () => {
-	favoriteProducts = [];
-	localStorage.removeItem("favoriteProducts");
+	user.favoriteProducts = [];
+	localStorage.setItem("user", JSON.stringify(user));
 
 	// Run All Nav Bar Functions
 	runAllNavFunctions();
 };
 
-//
-//
-//
-//
 //
 // const addToCart = document.querySelectorAll(".add-to-cart");
 // if (addToCart) {
@@ -477,24 +413,24 @@ const removeAllFavorite = () => {
 // 				);
 
 // 				// Check If Product In Array
-// 				if (cartProducts.length > 0) {
+// 				if (user.cartProducts.length > 0) {
 // 					let findProduct = false;
-// 					cartProducts.map((product) => {
+// 					user.cartProducts.map((product) => {
 // 						if (product.id == productId[0].id) {
 // 							findProduct = true;
 // 						}
 // 					});
 
 // 					if (!findProduct) {
-// 						cartProducts.push(productId[0]);
+// 						user.cartProducts.push(productId[0]);
 // 					}
 // 				} else {
-// 					cartProducts.push(productId[0]);
+// 					user.cartProducts.push(productId[0]);
 // 				}
 
 // 				localStorage.setItem(
-// 					"cartProducts",
-// 					JSON.stringify(cartProducts)
+// 					"user.cartProducts",
+// 					JSON.stringify(user.cartProducts)
 // 				);
 // 			} else {
 // 				window.location = "login.html";
@@ -502,7 +438,7 @@ const removeAllFavorite = () => {
 
 // 			// Increase Shopping Cart Icon Number
 // 			if (shoppingCartIconNum) {
-// 				shoppingCartIconNum.innerHTML = cartProducts.length;
+// 				shoppingCartIconNum.innerHTML = user.cartProducts.length;
 // 			}
 // 		});
 // 	}

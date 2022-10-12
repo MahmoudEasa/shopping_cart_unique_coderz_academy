@@ -28,6 +28,26 @@
 			</div>
 		</header>
 
+		<section class="favorite-cart">
+			<div class="container">
+				<button
+					style="
+						display: block;
+						width: 100%;
+						margin: 30px 0 20px;
+						font-size: 20px;
+					"
+					onclick="removeAllFavorite(), window.location = 'index.html' "
+					class="add-to-cart"
+				>
+					Remove All
+				</button>
+				<div class="products"></div>
+			</div>
+		</section>
+
+		<script src="js/data.js"></script>
 		<script src="js/app.js"></script>
+		<script src="js/favoriteCart.js"></script>
 	</body>
 </html>

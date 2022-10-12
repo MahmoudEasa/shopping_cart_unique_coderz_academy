@@ -1,0 +1,19 @@
+*********** Done ***********
+- add to cart
+- remove from cart
+- cart page
+- add to favorite
+- remove from favorite
+- favorite page
+- login register logout
+
+
+*********** Required ***********
+- filter by size || name
+- search by name
+- create product
+- edit product [just my products created]
+- remove product [just my products created]
+- increase and decrease items in cart
+- produt details
+- 

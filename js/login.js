@@ -1,13 +1,8 @@
 const formData = document.querySelector("#form");
-let users = [];
-let findUser = "";
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let findUser = JSON.parse(localStorage.getItem("user")) || "";
 
-if (localStorage.getItem("users")) {
-	users = JSON.parse(localStorage.getItem("users"));
-}
-
-if (localStorage.getItem("user")) {
-	findUser = JSON.parse(localStorage.getItem("user"));
+if (findUser) {
 	window.location.replace("index.html");
 }
 
